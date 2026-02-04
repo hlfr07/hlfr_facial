@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Facial Recognition System</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 1200px;
+        width: 100%;
+      }
+
+      .header {
+        text-align: center;
+        color: white;
+        margin-bottom: 40px;
+      }
+
+      .header h1 {
+        font-size: 36px;
+        margin-bottom: 10px;
+      }
+
+      .header p {
+        font-size: 16px;
+        opacity: 0.9;
+      }
+
+      .tabs {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 30px;
+        border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .tab-button {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 16px;
+        font-weight: 600;
+        padding: 15px 30px;
+        cursor: pointer;
+        opacity: 0.7;
+        transition: all 0.3s ease;
+        border-bottom: 3px solid transparent;
+      }
+
+      .tab-button.active {
+        opacity: 1;
+        border-bottom-color: white;
+      }
+
+      .tab-button:hover {
+        opacity: 0.9;
+      }
+
+      .tab-content {
+        display: none;
+        animation: fadeIn 0.3s ease;
+      }
+
+      .tab-content.active {
+        display: block;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        overflow: hidden;
+      }
+
+      .card-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px 20px;
+        text-align: center;
+      }
+
+      .card-header h2 {
+        font-size: 24px;
+        margin-bottom: 10px;
+      }
+
+      .card-header p {
+        font-size: 14px;
+        opacity: 0.9;
+      }
+
+      .card-content {
+        padding: 30px;
+      }
+
+      .upload-area {
+        background: #f8f9fa;
+        border: 2px dashed #667eea;
+        border-radius: 8px;
+        padding: 40px;
+        text-align: center;
+        margin-bottom: 30px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .upload-area:hover {
+        border-color: #764ba2;
+        background: #f3f1ff;
+      }
+
+      .upload-area input[type='file'] {
+        display: none;
+      }
+
+      .upload-icon {
+        font-size: 48px;
+        margin-bottom: 15px;
+      }
+
+      .upload-area h3 {
+        color: #333;
+        margin-bottom: 10px;
+        font-size: 18px;
+      }
+
+      .upload-area p {
+        color: #666;
+        font-size: 14px;
+        margin-bottom: 15px;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 10px;
+        color: #333;
+        font-weight: 600;
+        font-size: 14px;
+      }
+
+      .form-group input {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 14px;
+        transition: border-color 0.3s ease;
+      }
+
+      .form-group input:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      }
+
+      .btn {
+        display: inline-block;
+        padding: 12px 24px;
+        border-radius: 6px;
+        border: none;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        width: 100%;
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+      }
+
+      .btn-primary:active {
+        transform: translateY(0);
+      }
+
+      .btn-secondary {
+        background: #6c757d;
+        color: white;
+        margin-right: 10px;
+      }
+
+      .btn-secondary:hover {
+        background: #5a6268;
+      }
+
+      .btn-danger {
+        background: #dc3545;
+        color: white;
+        padding: 6px 12px;
+        font-size: 12px;
+      }
+
+      .btn-danger:hover {
+        background: #c82333;
+      }
+
+      .message {
+        padding: 15px;
+        border-radius: 6px;
+        margin-bottom: 20px;
+        display: none;
+        animation: slideIn 0.3s ease;
+      }
+
+      .message.active {
+        display: block;
+      }
+
+      @keyframes slideIn {
+        from {
+          transform: translateX(-100%);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+
+      .message.success {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+      }
+
+      .message.error {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+      }
+
+      .message.info {
+        background: #d1ecf1;
+        color: #0c5460;
+        border: 1px solid #bee5eb;
+      }
+
+      .loading {
+        display: none;
+        text-align: center;
+        color: #667eea;
+        margin: 20px 0;
+      }
+
+      .loading.active {
+        display: block;
+      }
+
+      .spinner {
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid #667eea;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 10px;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .result-box {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 20px;
+        margin-top: 20px;
+        display: none;
+        border-left: 4px solid #667eea;
+      }
+
+      .result-box.active {
+        display: block;
+      }
+
+      .result-box.success {
+        border-left-color: #28a745;
+        background: #d4edda;
+      }
+
+      .result-box.error {
+        border-left-color: #dc3545;
+        background: #f8d7da;
+      }
+
+      .result-box h3 {
+        margin-bottom: 10px;
+        font-size: 18px;
+      }
+
+      .result-box p {
+        margin: 5px 0;
+        font-size: 14px;
+      }
+
+      .registered-faces {
+        margin-top: 30px;
+        padding-top: 30px;
+        border-top: 2px solid #eee;
+      }
+
+      .registered-faces h3 {
+        color: #333;
+        margin-bottom: 20px;
+        font-size: 18px;
+      }
+
+      .faces-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 15px;
+      }
+
+      .face-item {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 15px;
+        border: 1px solid #ddd;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .face-name {
+        font-weight: 600;
+        color: #333;
+      }
+
+      .face-date {
+        font-size: 12px;
+        color: #999;
+        margin-top: 5px;
+      }
+
+      .empty-state {
+        text-align: center;
+        color: #999;
+        padding: 30px;
+      }
+
+      .process-flow {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 30px;
+        font-size: 12px;
+        color: #666;
+      }
+
+      .process-flow p {
+        margin: 10px 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .process-step {
+        background: white;
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-weight: 600;
+      }
+
+      .pipeline-visual {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+
+      .pipeline-item {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 12px;
+        border: 1px solid #ddd;
+      }
+
+      .pipeline-title {
+        font-size: 12px;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 8px;
+      }
+
+      .pipeline-canvas {
+        width: 100%;
+        height: auto;
+        background: #fff;
+        border: 1px solid #e2e2e2;
+        border-radius: 6px;
+      }
+
+      .pipeline-note {
+        font-size: 11px;
+        color: #666;
+        margin-top: 6px;
+      }
+
+      .embedding-bars {
+        display: grid;
+        grid-template-columns: repeat(16, 1fr);
+        gap: 2px;
+        height: 112px;
+        align-items: end;
+        background: #fff;
+        border: 1px solid #e2e2e2;
+        border-radius: 6px;
+        padding: 6px;
+      }
+
+      .embedding-bar {
+        width: 100%;
+        border-radius: 2px;
+        background: linear-gradient(180deg, #667eea, #764ba2);
+      }
+
+      @media (max-width: 768px) {
+        .header h1 {
+          font-size: 28px;
+        }
+
+        .tabs {
+          flex-wrap: wrap;
+        }
+
+        .tab-button {
+          padding: 12px 20px;
+          font-size: 14px;
+        }
+
+        .faces-list {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>🔐 Facial Recognition System</h1>
+        <p>Register and verify faces with AI-powered recognition</p>
+      </div>
+
+      <div class="tabs">
+        <button class="tab-button active" onclick="switchTab('register')">📝 Register Face</button>
+        <button class="tab-button" onclick="switchTab('verify')">✓ Verify Face</button>
+      </div>
+
+      <!-- REGISTRO TAB -->
+      <div id="register" class="tab-content active">
+        <div class="card">
+          <div class="card-header">
+            <h2>Register a New Face</h2>
+            <p>Add a new face to the system with a name</p>
+          </div>
+
+          <div class="card-content">
+            <div class="process-flow">
+              <p>
+                <span class="process-step">📷 Image</span>
+                →
+                <span class="process-step">🧠 SCRFD</span>
+                →
+                <span class="process-step">✂️ Crop</span>
+                →
+                <span class="process-step">🧠 ArcFace</span>
+                →
+                <span class="process-step">💾 Store</span>
+              </p>
+            </div>
+
+            <div class="pipeline-visual" id="registerPipeline">
+              <div class="pipeline-item">
+                <div class="pipeline-title">📷 Cámara / Imagen</div>
+                <canvas class="pipeline-canvas" id="registerOriginalCanvas" width="240" height="180"></canvas>
+                <div class="pipeline-note">Entrada original</div>
+              </div>
+              <div class="pipeline-item">
+                <div class="pipeline-title">🧠 SCRFD (detección)</div>
+                <canvas class="pipeline-canvas" id="registerDetectCanvas" width="240" height="180"></canvas>
+                <div class="pipeline-note">Simulación del bounding box</div>
+              </div>
+              <div class="pipeline-item">
+                <div class="pipeline-title">✂️ Crop + Resize (112x112)</div>
+                <canvas class="pipeline-canvas" id="registerCropCanvas" width="112" height="112"></canvas>
+                <div class="pipeline-note">Salida 112x112</div>
+              </div>
+              <div class="pipeline-item">
+                <div class="pipeline-title">🧠 ArcFace (embedding 512)</div>
+                <div class="embedding-bars" id="registerEmbeddingBars"></div>
+                <div class="pipeline-note">Representación visual del embedding</div>
+              </div>
+            </div>
+
+            <div id="registerMessage" class="message"></div>
+
+            <div class="upload-area" id="registerUploadArea">
+              <div class="upload-icon">📸</div>
+              <h3>Upload Face Image</h3>
+              <p>Drag and drop or click to select</p>
+              <input type="file" id="registerFileInput" accept="image/*" />
+            </div>
+
+            <div class="form-group">
+              <label for="nameInput">Full Name</label>
+              <input type="text" id="nameInput" placeholder="Enter the person's name" />
+            </div>
+
+            <div class="loading" id="registerLoading">
+              <div class="spinner"></div>
+              <p>Processing image and registering face...</p>
+            </div>
+
+            <button class="btn btn-primary" id="registerBtn" onclick="registerFace()" style="display: none">
+              Register Face
+            </button>
+
+            <div class="registered-faces">
+              <h3>Registered Faces</h3>
+              <div class="faces-list" id="registeredFacesList"></div>
+              <div class="empty-state" id="emptyRegistered">No faces registered yet</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VERIFICACIÓN TAB -->
+      <div id="verify" class="tab-content">
+        <div class="card">
+          <div class="card-header">
+            <h2>Verify a Face</h2>
+            <p>Upload an image to verify if the face is registered</p>
+          </div>
+
+          <div class="card-content">
+            <div class="process-flow">
+              <p>
+                <span class="process-step">📷 Image</span>
+                →
+                <span class="process-step">🧠 SCRFD</span>
+                →
+                <span class="process-step">✂️ Crop</span>
+                →
+                <span class="process-step">🧠 ArcFace</span>
+                →
+                <span class="process-step">📐 Compare</span>
+                →
+                <span class="process-step">✓/✗ Result</span>
+              </p>
+            </div>
+
+            <div class="pipeline-visual" id="verifyPipeline">
+              <div class="pipeline-item">
+                <div class="pipeline-title">📷 Cámara / Imagen</div>
+                <canvas class="pipeline-canvas" id="verifyOriginalCanvas" width="240" height="180"></canvas>
+                <div class="pipeline-note">Entrada original</div>
+              </div>
+              <div class="pipeline-item">
+                <div class="pipeline-title">🧠 SCRFD (detección)</div>
+                <canvas class="pipeline-canvas" id="verifyDetectCanvas" width="240" height="180"></canvas>
+                <div class="pipeline-note">Simulación del bounding box</div>
+              </div>
+              <div class="pipeline-item">
+                <div class="pipeline-title">✂️ Crop + Resize (112x112)</div>
+                <canvas class="pipeline-canvas" id="verifyCropCanvas" width="112" height="112"></canvas>
+                <div class="pipeline-note">Salida 112x112</div>
+              </div>
+              <div class="pipeline-item">
+                <div class="pipeline-title">🧠 ArcFace (embedding 512)</div>
+                <div class="embedding-bars" id="verifyEmbeddingBars"></div>
+                <div class="pipeline-note">Representación visual del embedding</div>
+              </div>
+            </div>
+
+            <div id="verifyMessage" class="message"></div>
+
+            <div class="upload-area" id="verifyUploadArea">
+              <div class="upload-icon">🔍</div>
+              <h3>Upload Face to Verify</h3>
+              <p>Drag and drop or click to select</p>
+              <input type="file" id="verifyFileInput" accept="image/*" />
+            </div>
+
+            <div class="loading" id="verifyLoading">
+              <div class="spinner"></div>
+              <p>Analyzing face...</p>
+            </div>
+
+            <div class="result-box" id="resultBox"></div>
+
+            <button class="btn btn-primary" id="verifyBtn" onclick="verifyFace()" style="display: none">
+              Verify Face
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Funciones de Tab
+      function switchTab(tabName) {
+        const tabs = document.querySelectorAll('.tab-content');
+        const buttons = document.querySelectorAll('.tab-button');
+
+        tabs.forEach((tab) => tab.classList.remove('active'));
+        buttons.forEach((btn) => btn.classList.remove('active'));
+
+        document.getElementById(tabName).classList.add('active');
+        event.target.classList.add('active');
+      }
+
+      // ===== PIPELINE VISUAL =====
+      const pipelineRefs = {
+        register: {
+          original: document.getElementById('registerOriginalCanvas'),
+          detect: document.getElementById('registerDetectCanvas'),
+          crop: document.getElementById('registerCropCanvas'),
+          bars: document.getElementById('registerEmbeddingBars'),
+        },
+        verify: {
+          original: document.getElementById('verifyOriginalCanvas'),
+          detect: document.getElementById('verifyDetectCanvas'),
+          crop: document.getElementById('verifyCropCanvas'),
+          bars: document.getElementById('verifyEmbeddingBars'),
+        },
+      };
+
+      function clearCanvas(canvas, label) {
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#999';
+        ctx.font = '12px Segoe UI, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(label, canvas.width / 2, canvas.height / 2);
+      }
+
+      function clearEmbeddingBars(container) {
+        if (!container) return;
+        container.innerHTML = '';
+      }
+
+      function resetPipeline(prefix) {
+        const refs = pipelineRefs[prefix];
+        clearCanvas(refs.original, 'Sin imagen');
+        clearCanvas(refs.detect, 'Sin detección');
+        clearCanvas(refs.crop, '112x112');
+        clearEmbeddingBars(refs.bars);
+      }
+
+      function drawContain(ctx, img, canvas) {
+        const cw = canvas.width;
+        const ch = canvas.height;
+        ctx.clearRect(0, 0, cw, ch);
+        ctx.fillStyle = '#fff';
+        ctx.fillRect(0, 0, cw, ch);
+        const ratio = Math.min(cw / img.width, ch / img.height);
+        const nw = img.width * ratio;
+        const nh = img.height * ratio;
+        const x = (cw - nw) / 2;
+        const y = (ch - nh) / 2;
+        ctx.drawImage(img, x, y, nw, nh);
+        return { x, y, w: nw, h: nh };
+      }
+
+      function drawDetectionBox(ctx, bounds, canvas) {
+        const cx = bounds.x + bounds.w * 0.2;
+        const cy = bounds.y + bounds.h * 0.2;
+        const cw = bounds.w * 0.6;
+        const ch = bounds.h * 0.6;
+        ctx.strokeStyle = '#00c853';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(cx, cy, cw, ch);
+        ctx.fillStyle = 'rgba(0, 200, 83, 0.12)';
+        ctx.fillRect(cx, cy, cw, ch);
+      }
+
+      function drawCrop(img, canvas) {
+        const ctx = canvas.getContext('2d');
+        const side = Math.min(img.width, img.height) * 0.6;
+        const sx = (img.width - side) / 2;
+        const sy = (img.height - side) / 2;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#fff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, sx, sy, side, side, 0, 0, canvas.width, canvas.height);
+      }
+
+      function renderEmbeddingBars(container, seed) {
+        if (!container) return;
+        container.innerHTML = '';
+        const totalBars = 64;
+        for (let i = 0; i < totalBars; i++) {
+          const bar = document.createElement('div');
+          bar.className = 'embedding-bar';
+          const value = Math.abs(Math.sin(seed + i) * 10000) % 1;
+          bar.style.height = `${12 + value * 88}px`;
+          container.appendChild(bar);
+        }
+      }
+
+      function renderPipelineFromFile(file, prefix) {
+        const refs = pipelineRefs[prefix];
+        if (!file || !refs) return;
+
+        const reader = new FileReader();
+        reader.onload = () => {
+          const img = new Image();
+          img.onload = () => {
+            const ctxOriginal = refs.original.getContext('2d');
+            const ctxDetect = refs.detect.getContext('2d');
+            const bounds = drawContain(ctxOriginal, img, refs.original);
+            const detectBounds = drawContain(ctxDetect, img, refs.detect);
+            drawDetectionBox(ctxDetect, detectBounds, refs.detect);
+            drawCrop(img, refs.crop);
+            const seed = (img.width + img.height + file.size) / 7;
+            renderEmbeddingBars(refs.bars, seed);
+          };
+          img.src = reader.result;
+        };
+        reader.readAsDataURL(file);
+      }
+
+      resetPipeline('register');
+      resetPipeline('verify');
+
+      // ===== REGISTRO =====
+      const registerUploadArea = document.getElementById('registerUploadArea');
+      const registerFileInput = document.getElementById('registerFileInput');
+      const nameInput = document.getElementById('nameInput');
+      const registerBtn = document.getElementById('registerBtn');
+      const registerLoading = document.getElementById('registerLoading');
+      const registerMessage = document.getElementById('registerMessage');
+
+      // Drag and drop para registro
+      registerUploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        registerUploadArea.style.borderColor = '#764ba2';
+        registerUploadArea.style.background = '#f3f1ff';
+      });
+
+      registerUploadArea.addEventListener('dragleave', () => {
+        registerUploadArea.style.borderColor = '#667eea';
+        registerUploadArea.style.background = '#f8f9fa';
+      });
+
+      registerUploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        registerUploadArea.style.borderColor = '#667eea';
+        registerUploadArea.style.background = '#f8f9fa';
+
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+          registerFileInput.files = files;
+          registerBtn.style.display = 'block';
+          renderPipelineFromFile(files[0], 'register');
+        }
+      });
+
+      registerUploadArea.addEventListener('click', () => registerFileInput.click());
+
+      registerFileInput.addEventListener('change', () => {
+        if (registerFileInput.files.length > 0) {
+          registerBtn.style.display = 'block';
+          renderPipelineFromFile(registerFileInput.files[0], 'register');
+        }
+      });
+
+      async function registerFace() {
+        const file = registerFileInput.files[0];
+        const name = nameInput.value.trim();
+
+        if (!file) {
+          showMessage(registerMessage, 'Please select an image', 'error');
+          return;
+        }
+
+        if (!name) {
+          showMessage(registerMessage, 'Please enter a name', 'error');
+          return;
+        }
+
+        registerLoading.classList.add('active');
+        registerBtn.disabled = true;
+
+        const formData = new FormData();
+        formData.append('image', file);
+        formData.append('name', name);
+
+        try {
+          const response = await fetch('/api/faces/register', {
+            method: 'POST',
+            body: formData,
+          });
+
+          const result = await response.json();
+
+          if (result.success) {
+            showMessage(registerMessage, result.message, 'success');
+            registerFileInput.value = '';
+            nameInput.value = '';
+            registerBtn.style.display = 'none';
+            resetPipeline('register');
+            loadRegisteredFaces();
+          } else {
+            showMessage(registerMessage, result.message, 'error');
+          }
+        } catch (error) {
+          showMessage(registerMessage, 'Error registering face: ' + error.message, 'error');
+        } finally {
+          registerLoading.classList.remove('active');
+          registerBtn.disabled = false;
+        }
+      }
+
+      async function loadRegisteredFaces() {
+        try {
+          const response = await fetch('/api/faces/registered');
+          const result = await response.json();
+
+          const facesList = document.getElementById('registeredFacesList');
+          const emptyState = document.getElementById('emptyRegistered');
+
+          facesList.innerHTML = '';
+
+          if (result.faces.length === 0) {
+            emptyState.style.display = 'block';
+            return;
+          }
+
+          emptyState.style.display = 'none';
+
+          result.faces.forEach((face) => {
+            const date = new Date(face.timestamp);
+            const faceItem = document.createElement('div');
+            faceItem.className = 'face-item';
+            faceItem.innerHTML = `
+              <div>
+                <div class="face-name">👤 ${face.name}</div>
+                <div class="face-date">${date.toLocaleDateString()} ${date.toLocaleTimeString()}</div>
+              </div>
+              <button class="btn btn-danger" onclick="deleteRegisteredFace('${face.name}')">Delete</button>
+            `;
+            facesList.appendChild(faceItem);
+          });
+        } catch (error) {
+          console.error('Error loading registered faces:', error);
+        }
+      }
+
+      async function deleteRegisteredFace(name) {
+        if (!confirm(`Delete face for ${name}?`)) return;
+
+        try {
+          const response = await fetch(`/api/faces/registered/${encodeURIComponent(name)}`, {
+            method: 'DELETE',
+          });
+
+          const result = await response.json();
+          if (result.success) {
+            showMessage(registerMessage, result.message, 'success');
+            loadRegisteredFaces();
+          } else {
+            showMessage(registerMessage, result.message, 'error');
+          }
+        } catch (error) {
+          showMessage(registerMessage, 'Error deleting face: ' + error.message, 'error');
+        }
+      }
+
+      // ===== VERIFICACIÓN =====
+      const verifyUploadArea = document.getElementById('verifyUploadArea');
+      const verifyFileInput = document.getElementById('verifyFileInput');
+      const verifyBtn = document.getElementById('verifyBtn');
+      const verifyLoading = document.getElementById('verifyLoading');
+      const verifyMessage = document.getElementById('verifyMessage');
+      const resultBox = document.getElementById('resultBox');
+
+      // Drag and drop para verificación
+      verifyUploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        verifyUploadArea.style.borderColor = '#764ba2';
+        verifyUploadArea.style.background = '#f3f1ff';
+      });
+
+      verifyUploadArea.addEventListener('dragleave', () => {
+        verifyUploadArea.style.borderColor = '#667eea';
+        verifyUploadArea.style.background = '#f8f9fa';
+      });
+
+      verifyUploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        verifyUploadArea.style.borderColor = '#667eea';
+        verifyUploadArea.style.background = '#f8f9fa';
+
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+          verifyFileInput.files = files;
+          verifyBtn.style.display = 'block';
+          renderPipelineFromFile(files[0], 'verify');
+        }
+      });
+
+      verifyUploadArea.addEventListener('click', () => verifyFileInput.click());
+
+      verifyFileInput.addEventListener('change', () => {
+        if (verifyFileInput.files.length > 0) {
+          verifyBtn.style.display = 'block';
+          renderPipelineFromFile(verifyFileInput.files[0], 'verify');
+        }
+      });
+
+      async function verifyFace() {
+        const file = verifyFileInput.files[0];
+
+        if (!file) {
+          showMessage(verifyMessage, 'Please select an image', 'error');
+          return;
+        }
+
+        verifyLoading.classList.add('active');
+        verifyBtn.disabled = true;
+        resultBox.classList.remove('active');
+
+        const formData = new FormData();
+        formData.append('image', file);
+
+        try {
+          const response = await fetch('/api/faces/verify', {
+            method: 'POST',
+            body: formData,
+          });
+
+          const result = await response.json();
+
+          if (result.verified) {
+            resultBox.className = 'result-box active success';
+            resultBox.innerHTML = `
+              <h3>✓ Access Granted</h3>
+              <p><strong>Name:</strong> ${result.name}</p>
+              <p><strong>Confidence:</strong> ${result.confidence}%</p>
+            `;
+            showMessage(verifyMessage, result.message, 'success');
+          } else {
+            resultBox.className = 'result-box active error';
+            resultBox.innerHTML = `<h3>✗ Access Denied</h3><p>Face not recognized in the system.</p>`;
+            showMessage(verifyMessage, result.message, 'error');
+          }
+
+          verifyFileInput.value = '';
+          verifyBtn.style.display = 'none';
+        } catch (error) {
+          showMessage(verifyMessage, 'Error verifying face: ' + error.message, 'error');
+        } finally {
+          verifyLoading.classList.remove('active');
+          verifyBtn.disabled = false;
+        }
+      }
+
+      // Funciones auxiliares
+      function showMessage(element, text, type) {
+        element.textContent = text;
+        element.className = `message active ${type}`;
+        setTimeout(() => {
+          element.classList.remove('active');
+        }, 5000);
+      }
+
+      // Cargar rostros registrados al cargar la página
+      loadRegisteredFaces();
+    </script>
+  </body>
+</html>

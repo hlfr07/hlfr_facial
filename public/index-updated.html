@@ -1,0 +1,82 @@
+<!-- ARCHIVO TEMPORAL - Copiar contenido completo al index.html original -->
+<!-- Solo incluyo las funciones que deben agregarse/modificarse -->
+
+<script>
+// AGREGAR esta función después de resetPipeline('verify'); y ANTES de registerFace()
+
+function renderBackendProcessing(processing, prefix) {
+  const refs = pipelineRefs[prefix];
+  if (!refs || !processing) return;
+
+  console.log(`🎨 Rendering REAL backend processing for ${prefix}:`, processing);
+
+  // Render cropped image from backend (REAL 112x112 crop)
+  if (processing.croppedImageBase64) {
+    const img = new Image();
+    img.onload = () => {
+      const ctx = refs.crop.getContext('2d');
+      ctx.clearRect(0, 0, refs.crop.width, refs.crop.height);
+      ctx.drawImage(img, 0, 0, refs.crop.width, refs.crop.height);
+      console.log('✅ REAL Cropped image rendered from backend');
+    };
+    img.src = 'data:image/png;base64,' + processing.croppedImageBase64;
+  }
+
+  // Render embedding bars (REAL count from ArcFace)
+  if (processing.embeddingSize) {
+    renderEmbeddingBars(refs.bars, processing.embeddingSize);
+    console.log(`✅ REAL Embedding: ${processing.embeddingSize} dimensions`);
+  }
+
+  // Log detection box from SCRFD
+  if (processing.detectionBox) {
+    console.log('📦 REAL Detection box from SCRFD:', processing.detectionBox);
+  }
+
+  // Display ALL backend logs
+  if (processing.logs && processing.logs.length > 0) {
+    console.group(`📋 BACKEND LOGS (${prefix})`);
+    processing.logs.forEach(log => console.log(log));
+    console.groupEnd();
+  }
+}
+
+// MODIFICAR registerFace() - en el bloque "if (result.success)"
+// AGREGAR después de la línea "const result = await response.json();"
+/*
+if (result.success) {
+  // ✅ NUEVO: Render REAL backend processing
+  if (result.processing) {
+    renderBackendProcessing(result.processing, 'register');
+  }
+  showMessage(registerMessage, result.message, 'success');
+  // ... resto del código
+} else {
+  showMessage(registerMessage, result.message, 'error');
+  // ✅ NUEVO: Log errors from backend
+  if (result.logs) {
+    console.error('❌ Backend Error Logs:', result.logs);
+  }
+}
+*/
+
+// MODIFICAR verifyFace() - en los bloques "if (result.verified)" y "else"
+// AGREGAR después de obtener el result:
+/*
+if (result.verified) {
+  // ✅ NUEVO: Render REAL backend processing
+  if (result.processing) {
+    renderBackendProcessing(result.processing, 'verify');
+  }
+  resultBox.className = 'result-box active success';
+  // ... resto del código
+} else {
+  // ✅ NUEVO: Render REAL backend processing even on failure
+  if (result.processing) {
+    renderBackendProcessing(result.processing, 'verify');
+  }
+  resultBox.className = 'result-box active error';
+  // ... resto del código
+}
+*/
+</script>
