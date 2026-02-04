@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facial Recognition - Camera</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 1000px;
+            width: 100%;
+            padding: 30px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .mode-selector {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .mode-btn {
+            padding: 12px 30px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .mode-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .mode-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            align-items: start;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .camera-section {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #000;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .canvas-hidden {
+            display: none;
+        }
+
+        .capture-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+        }
+
+        .capture-btn:hover {
+            background: #ff5252;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+        }
+
+        .capture-btn:active {
+            transform: translateY(0);
+        }
+
+        .control-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .preview-section {
+            background: #f5f5f5;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .preview-title {
+            color: #666;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .preview-image {
+            width: 100%;
+            border-radius: 10px;
+            display: none;
+            max-height: 250px;
+            object-fit: contain;
+        }
+
+        .preview-image.show {
+            display: block;
+        }
+
+        .no-preview {
+            color: #999;
+            font-size: 14px;
+            padding: 40px 20px;
+        }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #d0d0d0;
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .result-section {
+            background: #f0f7ff;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .result-section.show {
+            display: block;
+        }
+
+        .result-section.success {
+            background: #e8f5e9;
+            border-left-color: #4caf50;
+        }
+
+        .result-section.error {
+            background: #ffebee;
+            border-left-color: #f44336;
+        }
+
+        .result-title {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .result-message {
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .result-section.success .result-title {
+            color: #2e7d32;
+        }
+
+        .result-section.success .result-message {
+            color: #1b5e20;
+        }
+
+        .result-section.error .result-title {
+            color: #c62828;
+        }
+
+        .result-section.error .result-message {
+            color: #b71c1c;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading {
+            text-align: center;
+            color: #667eea;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        .status-indicator.ready {
+            background: #4caf50;
+        }
+
+        .status-indicator.error {
+            background: #f44336;
+            animation: none;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎥 Facial Recognition</h1>
+            <p>Registra y verifica caras usando tu cámara web</p>
+        </div>
+
+        <div class="mode-selector">
+            <button class="mode-btn active" onclick="setMode('register')">📝 Registrar</button>
+            <button class="mode-btn" onclick="setMode('verify')">🔍 Verificar</button>
+        </div>
+
+        <div class="content">
+            <div class="camera-section">
+                <div class="video-container">
+                    <video id="video" autoplay playsinline></video>
+                </div>
+                <button class="capture-btn" onclick="capturePhoto()">📸 Capturar Foto</button>
+                <button class="btn btn-secondary" onclick="toggleCamera()" style="width: 100%;">🎥 Iniciar Cámara</button>
+                <canvas id="canvas" class="canvas-hidden"></canvas>
+            </div>
+
+            <div class="control-section">
+                <div id="register-form" style="display: block;">
+                    <div class="form-group">
+                        <label>👤 Nombre:</label>
+                        <input type="text" id="personName" placeholder="Ingresa el nombre de la persona">
+                    </div>
+                </div>
+
+                <div class="preview-section">
+                    <div class="preview-title">Vista previa</div>
+                    <img id="previewImage" class="preview-image" alt="Preview">
+                    <div class="no-preview">No hay foto capturada</div>
+                </div>
+
+                <div id="button-actions" class="button-group">
+                    <button class="btn btn-primary" id="submitBtn" onclick="submitForm()" disabled>
+                        ✅ Registrar
+                    </button>
+                    <button class="btn btn-secondary" onclick="clearCapture()">🔄 Limpiar</button>
+                </div>
+
+                <div id="resultSection" class="result-section">
+                    <div class="result-title" id="resultTitle">Resultado</div>
+                    <div class="result-message" id="resultMessage"></div>
+                </div>
+
+                <div id="loadingSection" style="display: none; text-align: center;">
+                    <div class="spinner"></div>
+                    <div class="loading">Procesando...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentMode = 'register';
+        let capturedImageBlob = null;
+        let cameraActive = false;
+
+        async function initCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: 'user' },
+                    audio: false 
+                });
+                document.getElementById('video').srcObject = stream;
+                cameraActive = true;
+            } catch (error) {
+                alert('No se pudo acceder a la cámara: ' + error.message);
+            }
+        }
+
+        function toggleCamera() {
+            const video = document.getElementById('video');
+            if (cameraActive && video.srcObject) {
+                video.srcObject.getTracks().forEach(track => track.stop());
+                cameraActive = false;
+            } else {
+                initCamera();
+            }
+        }
+
+        function capturePhoto() {
+            const video = document.getElementById('video');
+            const canvas = document.getElementById('canvas');
+
+            if (!cameraActive) {
+                alert('Por favor, inicia la cámara primero');
+                return;
+            }
+
+            const ctx = canvas.getContext('2d');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            ctx.drawImage(video, 0, 0);
+
+            canvas.toBlob(blob => {
+                capturedImageBlob = blob;
+                const reader = new FileReader();
+                reader.onload = e => {
+                    const preview = document.getElementById('previewImage');
+                    preview.src = e.target.result;
+                    preview.classList.add('show');
+                    document.getElementById('submitBtn').disabled = false;
+                };
+                reader.readAsDataURL(blob);
+            }, 'image/jpeg', 0.95);
+        }
+
+        function clearCapture() {
+            document.getElementById('previewImage').classList.remove('show');
+            document.getElementById('resultSection').classList.remove('show');
+            document.getElementById('submitBtn').disabled = true;
+            capturedImageBlob = null;
+        }
+
+        function setMode(mode) {
+            currentMode = mode;
+            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            const personName = document.getElementById('personName');
+            const submitBtn = document.getElementById('submitBtn');
+
+            if (mode === 'register') {
+                personName.style.display = 'block';
+                submitBtn.textContent = '✅ Registrar';
+            } else {
+                personName.style.display = 'none';
+                submitBtn.textContent = '🔍 Verificar';
+            }
+
+            clearCapture();
+        }
+
+        async function submitForm() {
+            if (!capturedImageBlob) {
+                alert('Por favor, captura una foto primero');
+                return;
+            }
+
+            const loadingSection = document.getElementById('loadingSection');
+            const resultSection = document.getElementById('resultSection');
+            const submitBtn = document.getElementById('submitBtn');
+
+            loadingSection.style.display = 'block';
+            resultSection.classList.remove('show');
+            submitBtn.disabled = true;
+
+            try {
+                const formData = new FormData();
+                formData.append('image', capturedImageBlob, 'photo.jpg');
+
+                let endpoint = '';
+                if (currentMode === 'register') {
+                    const name = document.getElementById('personName').value.trim();
+                    if (!name) {
+                        throw new Error('Por favor, ingresa un nombre');
+                    }
+                    formData.append('name', name);
+                    endpoint = '/api/faces/register';
+                } else {
+                    endpoint = '/api/faces/verify';
+                }
+
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+                showResult(data, response.ok);
+            } catch (error) {
+                showResult({ error: error.message }, false);
+            } finally {
+                loadingSection.style.display = 'none';
+                submitBtn.disabled = false;
+            }
+        }
+
+        function showResult(data, success) {
+            const resultSection = document.getElementById('resultSection');
+            const resultTitle = document.getElementById('resultTitle');
+            const resultMessage = document.getElementById('resultMessage');
+
+            resultSection.classList.remove('success', 'error');
+
+            if (success) {
+                resultSection.classList.add('success');
+                if (currentMode === 'register') {
+                    resultTitle.textContent = '✅ Registro Exitoso';
+                    resultMessage.innerHTML = `<strong>${data.name || 'Persona'}</strong> ha sido registrada correctamente.<br>Embedding: ${data.embedding ? data.embedding.length + ' dimensiones' : 'N/A'}`;
+                } else {
+                    if (data.verified) {
+                        resultTitle.textContent = '✅ Verificación Exitosa';
+                        resultMessage.innerHTML = `<strong>Match encontrado:</strong> ${data.name}<br><strong>Confianza:</strong> ${data.confidence}%`;
+                    } else {
+                        resultSection.classList.remove('success');
+                        resultSection.classList.add('error');
+                        resultTitle.textContent = '❌ Verificación Fallida';
+                        resultMessage.textContent = 'No se encontró coincidencia con las caras registradas.';
+                    }
+                }
+            } else {
+                resultSection.classList.add('error');
+                resultTitle.textContent = '❌ Error';
+                resultMessage.textContent = data.error || 'Ocurrió un error al procesar la solicitud.';
+            }
+
+            resultSection.classList.add('show');
+        }
+
+        // Iniciar la cámara cuando carga la página
+        window.addEventListener('load', () => {
+            initCamera();
+        });
+
+        // Limpiar la cámara cuando se cierra la página
+        window.addEventListener('beforeunload', () => {
+            const video = document.getElementById('video');
+            if (video.srcObject) {
+                video.srcObject.getTracks().forEach(track => track.stop());
+            }
+        });
+    </script>
+</body>
+</html>
