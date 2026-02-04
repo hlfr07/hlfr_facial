@@ -33,6 +33,14 @@ export class AppController {
     res.send(content);
   }
 
+  @Get('seg')
+  getSegment(@Res() res: Response) {
+    const segmentPath = path.join(__dirname, '..', 'public', 'seg.html');
+    const content = fs.readFileSync(segmentPath, 'utf-8');
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.send(content);
+  }
+
   // Comentado para permitir que ServeStaticModule sirva index.html
   // @Get()
   // getHello(): string {

@@ -6,10 +6,12 @@ import { AppService } from './app.service';
 import { UploadController } from './controllers/upload.controller';
 import { FacialController } from './controllers/facial.controller';
 import { DetectionController } from './controllers/detection.controller';
+import { SegmentationController } from './controllers/segmentation.controller';
 import { DatabaseService } from './services/database.service';
 import { ImageService } from './services/image.service';
 import { FacialRecognitionService } from './services/facial-recognition.service';
 import { YoloService } from './services/yolo.service';
+import { YoloSegService } from './services/yoloseg.service';
 
 @Module({
   imports: [
@@ -18,7 +20,7 @@ import { YoloService } from './services/yolo.service';
     //   serveRoot: '/',
     // }),
   ],
-  controllers: [AppController, UploadController, FacialController, DetectionController],
-  providers: [AppService, DatabaseService, ImageService, FacialRecognitionService, YoloService],
+  controllers: [AppController, UploadController, FacialController, DetectionController, SegmentationController],
+  providers: [AppService, DatabaseService, ImageService, FacialRecognitionService, YoloService, YoloSegService],
 })
 export class AppModule {}
