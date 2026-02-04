@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import * as ort from 'onnxruntime-node';
+import * as ort from 'onnxruntime-web';
 import * as path from 'path';
 import sharp from 'sharp';
 
