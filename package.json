@@ -1,5 +1,5 @@
 {
-  "name": "DATA_DNI",
+  "name": "hlfr_facial",
   "version": "0.0.1",
   "description": "",
   "author": "",
@@ -31,6 +31,7 @@
     "cheerio": "^1.1.2",
     "jimp": "^1.6.0",
     "onnxruntime-node": "^1.23.2",
+    "onnxruntime-web": "^1.23.2",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
     "sharp": "^0.34.5",
