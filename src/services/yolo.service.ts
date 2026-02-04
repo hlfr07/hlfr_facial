@@ -50,7 +50,7 @@ export class YoloService {
             this.logger.log('⏳ Loading YOLO model...');
             this.yoloSession = await ort.InferenceSession.create(yoloPath,
                 {
-                    executionProviders: ['cpu'] // CPU
+                    executionProviders: ['wasm'] // CPU
                 });
             this.logger.log('✅ YOLO model loaded successfully');
         } catch (error) {

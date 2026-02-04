@@ -82,13 +82,13 @@ export class FacialRecognitionService {
 
             this.logger.log('⏳ Loading SCRFD model...');
             this.scrfdSession = await ort.InferenceSession.create(scrfdPath, {
-                executionProviders: ['cpu'] // CPU
+                executionProviders: ['wasm'] // wasm
             });
             this.logger.log('✅ SCRFD model loaded');
 
             this.logger.log('⏳ Loading ArcFace model...');
             this.arcfaceSession = await ort.InferenceSession.create(arcfacePath, {
-                executionProviders: ['cpu'] // CPU
+                executionProviders: ['wasm'] // CPU
             });
             this.logger.log('✅ ArcFace model loaded');
 
