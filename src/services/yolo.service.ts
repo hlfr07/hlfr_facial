@@ -48,7 +48,10 @@ export class YoloService {
             }
 
             this.logger.log('⏳ Loading YOLO model...');
-            this.yoloSession = await ort.InferenceSession.create(yoloPath);
+            this.yoloSession = await ort.InferenceSession.create(yoloPath,
+                {
+                    executionProviders: ['wasm'] // CPU
+                });
             this.logger.log('✅ YOLO model loaded successfully');
         } catch (error) {
             this.logger.error('❌ Error loading YOLO model:', error);
@@ -86,7 +89,7 @@ export class YoloService {
 
             // Normalizar a [0, 1] y convertir a CHW format (igual que Python)
             const inputTensor = new Float32Array(3 * this.INPUT_SIZE * this.INPUT_SIZE);
-            
+
             for (let i = 0; i < this.INPUT_SIZE * this.INPUT_SIZE; i++) {
                 // Leer RGB directamente (sharp devuelve RGB en order)
                 const r = data[i * 3] / 255.0;
@@ -138,7 +141,7 @@ export class YoloService {
         // Python hace: output[0].T para transponer de (84, 8400) a (8400, 84)
         // Donde 84 = 4 bbox + 80 clases (sin objectness separado)
         // Y 8400 = número de detecciones
-        
+
         const numChannels = dims[1];      // 84 (4 bbox + 80 classes)
         const numDetections = dims[2];    // 8400 (detection anchors)
 
