@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import * as ort from 'onnxruntime-web';
+import * as ort from 'onnxruntime-node';
 import * as path from 'path';
 import sharp from 'sharp';
 
@@ -50,7 +50,7 @@ export class YoloService {
             this.logger.log('⏳ Loading YOLO model...');
             this.yoloSession = await ort.InferenceSession.create(yoloPath,
                 {
-                    executionProviders: ['wasm'] // CPU
+                    executionProviders: ['cpu'] // CPU
                 });
             this.logger.log('✅ YOLO model loaded successfully');
         } catch (error) {
