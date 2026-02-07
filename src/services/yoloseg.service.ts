@@ -63,7 +63,7 @@ export class YoloSegService {
 
     private async initializeModel() {
         try {
-            const modelPath = path.join(process.cwd(), 'src', 'models', 'yolo11n-seg-coco.onnx');
+            const modelPath = path.join(process.cwd(), 'src', 'models', 'yolo11x-seg.onnx');
             this.logger.log(`🔍 Checking YOLOSeg model: ${modelPath}`);
 
             const fs = require('fs');
